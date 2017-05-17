@@ -1,0 +1,30 @@
+@CHARSET "ISO-8859-1";
+#map
+{
+	margin-left: 0%;
+}
+header
+{
+	position: relative;
+	border-radius: 7px 5px 0px 0px;
+	background-color: black;
+}
+.h11
+{
+	display: inline-block;
+	font-size: 250%;
+	margin-left: 40%;
+	font-weight: normal;
+	color: white;
+	font-family: "Calibril";
+}
+
+.h12
+{
+	display: inline-block;
+	font-size: 250%;
+	position: relative;
+	font-weight: bold;
+	color: #2ca0c4;
+	font-family: "ArialNarrow";
+}
