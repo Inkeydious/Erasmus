@@ -75,6 +75,7 @@ public class Select extends HttpServlet {
 		
 	    out.println("</table>");
 	    
+	    
 	}
 	catch (Exception e) {			
 		out.println("<div class='alert alert-warning' role='alert'>Erreur "+e.getClass()+" : "+e.getMessage()+"</div>");
