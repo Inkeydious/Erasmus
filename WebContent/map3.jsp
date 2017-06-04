@@ -22,7 +22,10 @@
         padding: 0;
       }
       #connexion{
-      	padding-left: 95%;
+      	padding-left: 90%;
+      }
+      #formdeconnect{      
+      	padding-left: 44%;
       }
       #panelderecherche {
       	position: absolute;
@@ -381,7 +384,7 @@ $(document).ready(function() {
 <header>
 <div id="connexion">
 <form id="formconnect" action="Login.html" >
-	<button type="submit">Connection</button>
+	<button type="submit">Connection</button> <a href='Deconnect'><button type='button'>Deconnect</button></a>
 </form>
 </div>
 <h1 class="h11">Erasmus</h1> <h1 class="h12">Application</h1>
