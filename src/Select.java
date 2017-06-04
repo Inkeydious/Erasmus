@@ -1,9 +1,16 @@
-import java.io.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.annotation.*;
-import java.sql.*;
-import com.mysql.jdbc.Driver;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 @WebServlet("/Select")
@@ -31,8 +38,16 @@ public class Select extends HttpServlet {
 		
 	
 		
-	
-	String query = "select * from Ville;";
+	String resultat[] = req.getParameter("textField1").split(",");
+	ArrayList<String> result = new ArrayList();
+	for(int i = 0; i < resultat.length; i++)
+		result.add(resultat[i]);
+	ArrayList<String> resultfinal = new ArrayList();
+	for(int i = 0; i < result.size(); i++){
+		if(!resultfinal.contains(result.get(i)))
+			resultfinal.add(result.get(i));
+	}
+	//Check pour pas les mêmes villes
 	Connection con =null;
 	try {
 	    
@@ -40,37 +55,64 @@ public class Select extends HttpServlet {
 		Class.forName("com.mysql.jdbc.Driver");
 	    
 	    // connexion a la base
-	    con = DriverManager.getConnection("jdbc:mysql://localhost/sampledatabase?"+"user=root&password=root");
+	    con = DriverManager.getConnection("jdbc:mysql://localhost/sampledatabase?user=root&password=root");
 	    
 	    // execution de la requete
 	    Statement stmt = con.createStatement();
-	    ResultSet rs = stmt.executeQuery(query);
 	    
-	    out.println("<pre>"+query+"</pre>");
-	    
+
+		out.println("<h1>Erasmus Application</h1> ");
+
 	    out.println("<table class='table table-bordered table-striped'>");
 	    
 	    out.print("<thead>");
 		out.print("<tr>");
-	    out.print("<th>NAME</th>");
-	    out.print("<th>UNIVNAME</th>");
+	    out.print("<th>CITY</th>");
+	    out.print("<th>INTEREST</th>");
 	    out.print("<th>DESCRIPTION</th>");
 	    out.print("<th>DEPARTMENT</th>");
 	    out.println("</tr>");
 	    out.print("</thead>");
 	    
 	    out.print("<tbody>");
-	    
+	    String query = "";
+	    String in = " and Langage in (";
+	    ResultSet rs = null;
+	    for(int i = 0; i < resultfinal.size();i++){
+			query = "select NameCity, Langage from information where NameCity = '"+resultfinal.get(i)+"'";
+			if(req.getParameter("C") != null){
+				in += "'C'";
+				if((req.getParameter("Java") != null) || (req.getParameter("Cobol") != null))
+					in += ",";
+			}
+			if(req.getParameter("Java") != null){
+				in += "'Java'";
+				if((req.getParameter("Cobol") != null))
+					in += ",";
+			}
+			if(req.getParameter("Cobol") != null){
+				in += "'Cobol'";
+			}
+			in += ")";
+			if(req.getParameter("C") != null || req.getParameter("Java") != null || req.getParameter("Cobol") != null)
+				query += in;
+			query += ";";
+			in = " and Langage in (";
+		    rs = stmt.executeQuery(query);
+		    
+		    
 	    while(rs.next())
 		{
 		    out.println("<tr>");
-		    out.print("<td>"+rs.getString("Ville")+"</td>");
-		    out.print("<td>"+rs.getString("UnivName")+"</td>");
-		    out.print("<td>"+rs.getString("Description")+"</td>");
-		    out.print("<td>"+rs.getString("Department")+"</td>");
+		    out.print("<td>"+rs.getString("NameCity")+"</td>");
+		    out.print("<td>"+rs.getString("Langage")+"</td>");
+		  //  out.print("<td>"+rs.getString("Description")+"</td>");
+		   // out.print("<td>"+rs.getString("Department")+"</td>");
 		    out.println("</tr>");
 		}
-	    
+	    }
+	    //out.println("<pre>"+query+"</pre>");
+	    //out.println("<pre>"+ req.getParameter("textField1")+"</pre>");
 		out.print("</tbody>");
 		
 	    out.println("</table>");
@@ -89,7 +131,10 @@ public class Select extends HttpServlet {
 			out.println("</div>");
 		out.println("</div>");
 	out.println("</div>");
-
+	out.println("<a href='map.jsp'><button type='button' >Previous page</button></a>");	
 	out.println("</body></html>");
+    //res.sendRedirect("map.jsp");
+
     }
+
 }

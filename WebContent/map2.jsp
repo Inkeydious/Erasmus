@@ -46,13 +46,30 @@
         line-height: 30px;
         padding-left: 10px;
       }
-      
-      #listVille{
+      h2 {
+		color : BLACK;
+		}
+       #check{
       	position: absolute;
         top: 40%;
         left: 81%;
-        width: 15%;
-        height: 70%;
+        width: 20%;
+        height: 80%;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px  #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        font-size: small;
+        line-height: 30px;
+        padding-left: 10px;
+        }
+      #listVille{
+      	position: absolute;
+        top: 60%;
+        left: 81%;
+        width: 20%;
+        height: 80%;
         background-color: #fff;
         padding: 5px;
         border: 1px  #999;
@@ -63,15 +80,13 @@
         padding-left: 10px;
         }
       
-		h2 {
-		color : BLACK;
-		}
+
 		
 		
 		ul {
    		 margin: 0;
-  		 padding: 0;
-  	     list-style-type: none;
+  		  padding: 0;
+  		    list-style-type: none;
   		  
 		}
 
@@ -130,13 +145,13 @@
 <body>
   <div id="panelderecherche">
   	<input id="adresse" type="text">
-  	<input id="valider" type="button" value="Search">
+  	<input id="valider" type="button" value="Rechercher">
   </div>
   
   <div id="informations"  class="header">
-  	<h2>Cities list</h2>
-  	<input type="text" id="ville" placeholder="Enter your city...">
-  	<button onclick="newCity()" class="addCity">Add</button>
+  <h2>Cities List</h2>
+  <input type="text" id="ville" placeholder="Enter your city...">
+  <button onclick="newCity()" class="addCity">Add</button>
   </div>
   
   <div id="listVille">
@@ -173,12 +188,14 @@
   	  var li = document.createElement("li");
   	  var inputValue = document.getElementById("ville").value;
   	  var t = document.createTextNode(inputValue);
+  	  
+  	 
   	  li.appendChild(t);
   	  if (inputValue === '') {
   	    alert("You must write something!");
   	  } else {
   	    document.getElementById("listOfCities").appendChild(li);
-	  	  allCity += inputValue + ",";
+	  	allCity+=inputValue;
   	  }
   	  document.getElementById("ville").value = "";
 
@@ -198,7 +215,50 @@
   	</script>
     
     
-    <script>
+   
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6m_Z5GYZIXmHgnwbhR6Qdw6n7Qg4kAU8
+    &callback=initMap">
+    </script>
+       <script>
+// IMPORTANT ! Otherwise the DOM is not yet created !
+$(document).ready(function() {
+	$('#map').click(function(e) {
+		$.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&sensor=false", function( data ) {
+			  for(var i=0;i<data.results.length;i++){
+				  var item = data.results;
+				  for(var j=0;j<item.length;j++){
+					  if(item[i].address_components[j].types[0] === "locality"){
+						  cityArray.push(item[i].address_components[j].long_name);
+						  allCity += item[i].address_components[j].long_name + ",";
+						  console.log(allCity);
+						}
+					  break;
+				  }
+			  }
+			});
+		
+		$.ajax({ 
+		    type: 'GET', 
+		    url: "jdbc:mysql://localhost/sampledatabase?user=root&password=root", 
+		    beforeSend:function(data) { alert('toto') },
+		    success : function(data) {
+				data.forEach(function(element) {
+					console.log(element.langage);
+				});
+
+			},
+		    error: function( xhr, status, errorThrown ) {
+		        console.log( "Error: " + errorThrown + xhr + status);
+		    },
+		});
+		//Call to servlet
+	
+	});
+}); 
+
+    </script>
+     <script>
     var marker;
     var latitude;
     var longitude;
@@ -206,6 +266,7 @@
     var markerArray = [];
     var cityArray = [];
     var allCity = "";
+    var geocoder;
       function initMap() {
         var myLatlng = {lat: 50.60, lng: 3.06};
 
@@ -213,7 +274,7 @@
           zoom: 4,
           center: myLatlng
         });
-        var geocoder = new google.maps.Geocoder();
+        geocoder = new google.maps.Geocoder();
 
         document.getElementById('valider').addEventListener('click', function() {
           geocodeAddress(geocoder, map);
@@ -232,6 +293,7 @@
             latitude = e.latLng.lat();
             longitude = e.latLng.lng();
             console.log( 'Lat: ' + latitude + ' and Longitude is: ' + longitude );
+            codeLatLng(latitude,longitude);
             //Call to servlet
           });
 
@@ -239,6 +301,22 @@
           map.setZoom(8);
           map.setCenter(marker.getPosition());
         });
+      }
+      
+      function codeLatLng(lat, lng) {
+    	     			$.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&sensor=false", function( data ) {
+    				  for(var i=0;i<data.results.length;i++){
+    					  var item = data.results;
+    					  for(var j=0;j<item.length;j++){
+    						  if(item[i].address_components[j].types[0] === "locality"){
+    							  cityArray.push(item[i].address_components[j].long_name);
+    							  allCity += item[i].address_components[j].long_name + ",";
+    							 // alert(allCity);
+    							}
+    						  break;
+    					  }
+    				  }
+    				});
       }
       function geocodeAddress(geocoder, resultsMap) {
           var address = document.getElementById('adresse').value;
@@ -263,53 +341,9 @@
     	   markerArray.push(marker);
     	  marker.setAnimation(google.maps.Animation.DROP);
     	  map.panTo(latLng);
+    	  console.log("cadeau : " + allCity);
     	}
       
-    </script>
-    <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6m_Z5GYZIXmHgnwbhR6Qdw6n7Qg4kAU8
-    &callback=initMap">
-    </script>
-       <script>
-// IMPORTANT ! Otherwise the DOM is not yet created !
-$(document).ready(function() {
-	$('#map').click(function(e) {
-		$.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&sensor=false", function( data ) {
-			  for(var i=0;i<data.results.length;i++){
-				  var item = data.results;
-				  for(var j=0;j<item.length;j++){
-					  if(item[i].address_components[j].types[0] === "locality"){
-						  console.log(item[i].address_components[j].long_name);
-						  cityArray.push(item[i].address_components[j].long_name);
-						  allCity += item[i].address_components[j].long_name + ",";
-						  console.log(allCity);
-						}
-					  break;
-				  }
-			  }
-			});
-		/*
-		$.ajax({ 
-		    type: 'GET', 
-		    url: "sampledatabase/interest", 
-		   // beforeSend:function(data) { alert('toto') },
-		    success : function(data) {
-				data.forEach(function(element) {
-					console.log(element.langage);
-				});
-
-			},
-		    // Code to run if the request fails; the raw request and
-		    // status codes are passed to the function
-		    error: function( xhr, status, errorThrown ) {
-		        console.log( "Error: " + errorThrown + xhr + status);
-		    },
-		});*/
-		
-	});
-}); 
-
-// end document.ready
     </script>
     <div id='output'>
     </div>
@@ -356,7 +390,7 @@ function display() {
 
 <body>
 
-
+<div id="check">
 <form id="form1" action="Select" method="GET" enctype="multipart/form-data">
 	<input id="textField1" type="hidden" size="13" value="clear" name="textField1" /><br>
 
@@ -365,6 +399,6 @@ function display() {
          <input type="checkbox" name="Cobol" /> COBOL
 	<button type="submit" onclick="display()">Valide</button>
 </form>
-
+</div>
   </body>
 </html>
