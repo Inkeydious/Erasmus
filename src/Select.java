@@ -134,6 +134,7 @@ public class Select extends HttpServlet {
 	out.println("<a href='map.jsp'><button type='button' >Previous page</button></a>");	
 	out.println("</body></html>");
     //res.sendRedirect("map.jsp");
+	//req.getRequestDispatcher("map.jsp").forward(req, res);
 
     }
 

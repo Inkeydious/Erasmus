@@ -3,7 +3,6 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.sql.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 
 
 @WebServlet("/Authen")
@@ -36,8 +35,8 @@ public class Authen extends HttpServlet {
 
 	    // execution de la requete
 	    PreparedStatement ps =con.prepareStatement("SELECT * FROM users  WHERE login=? and mdp=?");
-	    ps.setString(1,StringEscapeUtils.escapeHtml4(req.getParameter("login")));
-	    ps.setString(2,StringEscapeUtils.escapeHtml4(req.getParameter("mdp")));
+	    ps.setString(1,req.getParameter("login"));
+	    ps.setString(2,req.getParameter("mdp"));
 
 	    //Statement stmt = con.createStatement();
 	   // String query = "select * from users where login='" + req.getParameter("login") + "' and mdp='"+req.getParameter("mdp") + "'";
@@ -46,7 +45,9 @@ public class Authen extends HttpServlet {
 	    if(rs.next()) {
 			HttpSession session = req.getSession(true);
 			// les autres pages devront tester la presence de login pour savoir si on a bien ete authentifie
-			Personne p = new Personne(rs.getString("login"),rs.getString("mdp"),rs.getString("nom"),rs.getString("prenom"),rs.getString("role"),rs.getString("adresse"));
+			//Personne p = new Personne(rs.getString("login"),rs.getString("mdp"),rs.getString("nom"),rs.getString("prenom"),rs.getString("role"),rs.getString("adresse"));
+			Personne p = new Personne(rs.getString("login"),rs.getString("mdp"));
+
 			session.setAttribute("login", p);
 			con.close();
 			res.sendRedirect("map3.jsp");
@@ -60,7 +61,7 @@ public class Authen extends HttpServlet {
 					out.println("<div class='col-xs-12'>");
 						out.println("<div class='alert alert-danger' role='alert'>Login ou mot de passe incorrect.</div>");
 					    con.close();
-					    out.println("<a href='login.html'><button type='button' class='btn btn-default btn-lg'>Retour</button></a>");
+					    out.println("<a href='Login.html'><button type='button' class='btn btn-default btn-lg'>Retour</button></a>");
 				    out.println("</div>");
 			    out.println("</div>");
 		    out.println("</div>");
