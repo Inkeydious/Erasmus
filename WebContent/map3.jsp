@@ -59,8 +59,8 @@
       	position: absolute;
         top: 40%;
         left: 81%;
-        width: 20%;
-        height: 80%;
+        width: 15%;
+        height: 20%;
         background-color: #fff;
         padding: 5px;
         border: 1px  #999;
@@ -73,9 +73,9 @@
       #listVille{
       	position: absolute;
         top: 60%;
-        left: 81%;
+        left: 71%;
         width: 20%;
-        height: 80%;
+        height: 20%;
         background-color: #fff;
         padding: 5px;
         border: 1px  #999;
@@ -85,7 +85,19 @@
         line-height: 30px;
         padding-left: 10px;
         }
-      
+	#ajoutvilleetlangage{
+      	position: absolute;
+        top: 50%;
+        left: 81%;
+        width: 17%;
+        height: 20%;
+        background-color: #fff;
+        border: 1px  #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        font-size: small;
+        line-height: 30px;
+     }      
 
 		
 		
@@ -410,6 +422,16 @@ function display() {
          <input type="checkbox" name="Java"  /> JAVA
          <input type="checkbox" name="Cobol" /> COBOL
 	<button type="submit" onclick="display()">Valide</button>
+</form>
+</div>
+
+<div id="ajoutvilleetlangage">
+<form action="InsertCityAndIntereset" method="GET">
+	<label for="login" >Name of the city : </label>
+	<input type="text" name="insertcity"/><br>
+	<label for="password" >Name of the interest : </label>
+	<input type="text" name="insertintereset">
+<button type="submit">Insert</button>
 </form>
 </div>
   </body>
