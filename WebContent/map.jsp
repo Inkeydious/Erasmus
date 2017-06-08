@@ -378,11 +378,13 @@ function display() {
          <input type="checkbox" name="Cobol" /> COBOL
 	<button type="submit" onclick="display()">Valide</button>
 </form>-->
+
 <div id="dropdownlist">
 <form action="Select" method="GET">
 <label for="mydropdown" datalabel="mydropdown">Interests</label>
 <input id="textField1" type="hidden" size="13" value="clear" name="textField1" />  
 <select name="textField2">
+    <option value="Nothing"></option>
     <option value="Java">Java</option>
     <option value="Cobol">Cobol</option>
     <option value="C">C</option>

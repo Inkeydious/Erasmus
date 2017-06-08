@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-@WebServlet("/Select")
-public class Select extends HttpServlet {
+@WebServlet("/Select2")
+public class Select2 extends HttpServlet {
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 	PrintWriter out = res.getWriter();
 	res.setContentType("text/html");
@@ -79,7 +79,6 @@ public class Select extends HttpServlet {
 	    String in = " and Langage in (";
 	    ResultSet rs = null;
 	    String option = req.getParameter("textField2");
-	    
 	    for(int i = 0; i < resultfinal.size();i++){
 	    	if (!resultfinal.get(i).equals(""))
 				query = "select NameCity, Langage from information where NameCity = '"+resultfinal.get(i)+"'";
@@ -121,7 +120,6 @@ public class Select extends HttpServlet {
 		    out.println("</tr>");
 		}
 	    }
-	    out.println("<pre>"+query+"</pre>");
 	    //out.println("<pre>"+ req.getParameter("textField1")+"</pre>");
 		out.print("</tbody>");
 		

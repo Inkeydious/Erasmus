@@ -426,7 +426,7 @@ function display() {
 </div>
 
 <div id="ajoutvilleetlangage">
-<form action="InsertCityAndIntereset" method="GET">
+<form action="InsertCityAndInterest" method="GET">
 	<label for="login" >Name of the city : </label>
 	<input type="text" name="insertcity"/><br>
 	<label for="password" >Name of the interest : </label>

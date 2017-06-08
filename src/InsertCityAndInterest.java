@@ -4,8 +4,8 @@ import javax.servlet.http.*;
 import javax.servlet.annotation.*;
 import java.sql.*;
 
-@WebServlet("/InsertCityAndIntereset")
-public class InsertCityAndIntereset extends HttpServlet 
+@WebServlet("/InsertCityAndInterest")
+public class InsertCityAndInterest extends HttpServlet 
 {
     public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException 
     {
@@ -48,7 +48,7 @@ public class InsertCityAndIntereset extends HttpServlet
 		String intereset = req.getParameter("insertintereset");
 		// Verification du login
 		Statement stmt = con.createStatement();
-		String query = "select * from ville where city='"+ city + "'";
+		String query = "select * from city where NameCity='"+ city + "'";
 		ResultSet rs = stmt.executeQuery(query);
 		
 		if(rs.next()) 
@@ -61,7 +61,7 @@ public class InsertCityAndIntereset extends HttpServlet
 		    {
 			String query2 = "insert into information values (";
 			query2 += ("'"+city+"',");
-			query2 += ("'"+intereset+"',");
+			query2 += ("'"+intereset+"')");
 			
 			out.println("<pre>Query : "+query2+"</pre>");
 			
