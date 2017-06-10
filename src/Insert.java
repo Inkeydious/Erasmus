@@ -78,20 +78,13 @@ public class Select extends HttpServlet {
 	    
 	    out.print("<tbody>");
 	    String query = "";
-	    String in = " and Langage in (";
+	    String in = "";
 	    ResultSet rs = null;
 	    String option = req.getParameter("textField2");
 	    
 	    for(int i = 0; i < resultfinal.size();i++){
 	    	if (!resultfinal.get(i).equals(""))
-				query = "select NameCity, Langage from information where NameCity = '"+resultfinal.get(i)+"'";
-	    	else
-				query = "select NameCity, Langage from information ";
-	    	
-	    	if (!resultfinal.get(i).equals(""))
-	    		in = " and Langage in (";
-	    	else
-	    		in = " where Langage in (";
+				query = "insert into information values ('"+resultfinal.get(i)+"',";
 	    	
 			if(option.equals("C")){
 				in += "'C'";
@@ -110,21 +103,17 @@ public class Select extends HttpServlet {
 			query += ";";
 		    out.println("<pre>"+query+"</pre>");
 
-		    rs = stmt.executeQuery(query);
+
 		    
+		    out.println("<pre>Query : "+query+"</pre>");
+		    	
+		    stmt.executeUpdate(query);
+		    	
+		    out.println("<div class='alert alert-success' role='alert'>The intereset :  " + option + " has been added to the city : " + resultfinal.get(i) +" </div>");
+		    out.println("<a href='mapdebibi2.jsp'><button type='button' class='btn btn-default btn-lg'>Back to the map</button></a>");
+		        
 		   
-	    while(rs.next())
-		{
-		    out.println("<tr>");
-		    out.print("<td>"+rs.getString("NameCity")+"</td>");
-		    touteVille+= rs.getString("NameCity") + ",";
-		   // out.print("<td>"+rs.getString("Langage")+"</td>");
-		  //  out.print("<td>"+rs.getString("Description")+"</td>");
-		   // out.print("<td>"+rs.getString("Department")+"</td>");
-		    out.println("</tr>");
-		}
 	    }
-	    out.println("<pre>"+query+"</pre>");
 	    //out.println("<pre>"+ req.getParameter("textField1")+"</pre>");
 		out.print("</tbody>");
 		
@@ -146,11 +135,11 @@ public class Select extends HttpServlet {
 	out.println("</div>");
 	out.println("<a href='map.jsp'><button type='button' >Previous page</button></a>");	
 	out.println("</body></html>");
-	req.setAttribute( "test", touteVille );
-	this.getServletContext().getRequestDispatcher( "/mapdebibi.jsp" ).forward( req, res );
-    //res.sendRedirect("map.jsp");
+	
+    res.sendRedirect("mapdebibi2.jsp");
 	//req.getRequestDispatcher("map.jsp").forward(req, res);
 
     }
+    
 
 }

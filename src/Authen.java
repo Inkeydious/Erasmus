@@ -50,7 +50,7 @@ public class Authen extends HttpServlet {
 
 			session.setAttribute("login", p);
 			con.close();
-			res.sendRedirect("map3.jsp");
+			res.sendRedirect("mapdebibi2.jsp");
 	    } else { 
 	    	out.println("<div class='container'>");
 		    	out.println("<div class='page-header'>");

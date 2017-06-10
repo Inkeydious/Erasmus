@@ -9,6 +9,6 @@ public class Deconnect extends HttpServlet {
 	public void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 		session.invalidate();
-		res.sendRedirect("map2.jsp");
+		res.sendRedirect("mapdebibi.jsp");
 	}
 }
