@@ -140,7 +140,7 @@
 		
     </style>
 </head>
-<body>
+<body onload="access()">
   <div id="panelderecherche">
   	<input id="adresse" type="text">
   	<input id="valider" type="button" value="Search">
@@ -219,15 +219,26 @@
     var markerArray = [];
     var cityArray = [];
     var allCity = "";
+    var map;
+    var geocoder;
+    var contentString = '<div id="content">'+
+    '<div id="siteNotice">'+
+    '</div>'+
+    '<h1 id="firstHeading" class="firstHeading">Lille</h1>'+
+    '<div id="bodyContent">'+
+    '<p><b>Lille</b></p>'+
+    '</div>'+
+    '</div>';
+    var infowindow;
       function initMap() {
         var myLatlng = {lat: 50.60, lng: 3.06};
 
-        var map = new google.maps.Map(document.getElementById("map"), {
+         map = new google.maps.Map(document.getElementById("map"), {
           zoom: 4,
           center: myLatlng
         });
-        var geocoder = new google.maps.Geocoder();
-
+        geocoder = new google.maps.Geocoder();
+        
         document.getElementById('valider').addEventListener('click', function() {
           geocodeAddress(geocoder, map);
         });
@@ -238,21 +249,38 @@
           map: map,
           title: 'Click to zoom'
         });
-       
+      	marker.setVisible(false);
         
+      	infowindow = new google.maps.InfoWindow({
+            content: contentString
+          });
+      	
         map.addListener('click', function(e) {
             placeMarkerAndPanTo(e.latLng, map);
             latitude = e.latLng.lat();
             longitude = e.latLng.lng();
             console.log( 'Lat: ' + latitude + ' and Longitude is: ' + longitude );
+            for (var i = 0; i < markerArray.length; i++) {
+                google.maps.event.addListener(markerArray[i], 'dblclick', function() {
+                    this.setMap(null);
+					markerArray.splice(i,1);
+					cityArray.splice(1,1);
+                });
+                google.maps.event.addListener(markerArray[i], 'click', function() {
+                	 infowindow.open(map, markerArray[i]);
+                });
+            }
+            console.log(markerArray);
             //Call to servlet
           });
 
-        marker.addListener('click', function() {
-          map.setZoom(8);
-          map.setCenter(marker.getPosition());
-        });
+       	marker.addListener('click', function() {
+       	   map.setZoom(8);
+       	   map.setCenter(marker.getPosition());
+       	 });
+      
       }
+       
       function geocodeAddress(geocoder, resultsMap) {
           var address = document.getElementById('adresse').value;
           geocoder.geocode({'address': address}, function(results, status) {
@@ -268,7 +296,6 @@
           });
         }
       function placeMarkerAndPanTo(latLng, map) {
-    	
     	   marker = new google.maps.Marker({
     	    position: latLng,
     	    map: map
@@ -280,19 +307,18 @@
       
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6m_Z5GYZIXmHgnwbhR6Qdw6n7Qg4kAU8
-    &callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD6m_Z5GYZIXmHgnwbhR6Qdw6n7Qg4kAU8&callback=initMap">
     </script>
        <script>
 // IMPORTANT ! Otherwise the DOM is not yet created !
 $(document).ready(function() {
+	
 	$('#map').click(function(e) {
 		$.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&sensor=false", function( data ) {
 			  for(var i=0;i<data.results.length;i++){
 				  var item = data.results;
 				  for(var j=0;j<item.length;j++){
 					  if(item[i].address_components[j].types[0] === "locality"){
-						  console.log(item[i].address_components[j].long_name);
 						  cityArray.push(item[i].address_components[j].long_name);
 						  allCity += item[i].address_components[j].long_name + ",";
 						  console.log(allCity);
@@ -301,23 +327,7 @@ $(document).ready(function() {
 				  }
 			  }
 			});
-		/*
-		$.ajax({ 
-		    type: 'GET', 
-		    url: "sampledatabase/interest", 
-		   // beforeSend:function(data) { alert('toto') },
-		    success : function(data) {
-				data.forEach(function(element) {
-					console.log(element.langage);
-				});
-
-			},
-		    // Code to run if the request fails; the raw request and
-		    // status codes are passed to the function
-		    error: function( xhr, status, errorThrown ) {
-		        console.log( "Error: " + errorThrown + xhr + status);
-		    },
-		});*/
+		
 		
 	});
 }); 
@@ -357,14 +367,63 @@ $(document).ready(function() {
 <header>
 <h1 class="h11">Erasmus</h1> <h1 class="h12">Application</h1>
 </header>
+
 <div id="map" style="width: 80%; height: 80%; border:solid" ></div>
 	
 
 
 <script>
+function videArrayMarker(){
+	for(var i = 0; i < markerArray.length; i++){
+		markerArray[i].setVisible(false);
+	}
+	markerArray = [];
+}
 function display() {
         document.getElementById("textField1").value = allCity;
     }
+function access(){
+	<%String attribut = "";
+		if(request.getAttribute("test") != null){
+			attribut = (String) request.getAttribute("test");
+		}
+			String [] tabville = attribut.split(",");
+	%>
+	var test="<%=attribut%>";
+	var tabtest = [];
+	tabtest = test.split(",");
+		for(var i = 0; i <tabtest.length; i++){
+			var newAddress;
+			geocoder.geocode({'address':tabtest[i]},function(results,status){
+				if(status==google.maps.GeocoderStatus.OK){
+					newAddress=results[0].geometry.location;
+					var latlng = new google.maps.LatLng(parseFloat(newAddress.lat()),parseFloat(newAddress.lng()));
+					marker = new google.maps.Marker({
+				        map : map,
+				        position : newAddress
+				      });
+					markerArray.push(marker);
+					marker.setMap(map);
+					for (var j = 0; j < markerArray.length; j++) {
+		                google.maps.event.addListener(markerArray[j], 'dblclick', function() {
+		                    this.setMap(null);
+		                    markerArray[j]=null;
+		                });
+		                infowindow = new google.maps.InfoWindow({
+		                    content: contentString
+		                  });
+		                google.maps.event.addListener(markerArray[j], 'click', function() {
+		                	 infowindow.open(map, markerArray[j]);
+		                });
+		            }
+				}
+			});
+			
+		}
+		
+	  
+	}
+
 </script>
 
 <body>
@@ -392,6 +451,12 @@ function display() {
 <button type="submit" onclick="display()">Valide</button>
 
 </form>
+</div>
+
+<div id="vireMarker">
+	<button type="submit" onclick="videArrayMarker()">Remove all markers</button>
+	<button type="submit" onclick="videArrayMarker()">Remove all markers</button>
+
 </div>
   </body>
 </html>

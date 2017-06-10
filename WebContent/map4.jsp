@@ -173,7 +173,7 @@
 		
     </style>
 </head>
-<body>
+<body onload="access()">
   <div id="panelderecherche">
   	<input id="adresse" type="text">
   	<input id="valider" type="button" value="Rechercher">
@@ -269,20 +269,7 @@ $(document).ready(function() {
 			  }
 			});
 		
-		$.ajax({ 
-		    type: 'GET', 
-		    url: "jdbc:mysql://localhost/sampledatabase?user=root&password=root", 
-		    beforeSend:function(data) { alert('toto') },
-		    success : function(data) {
-				data.forEach(function(element) {
-					console.log(element.langage);
-				});
-
-			},
-		    error: function( xhr, status, errorThrown ) {
-		        console.log( "Error: " + errorThrown + xhr + status);
-		    },
-		});
+		
 		//Call to servlet
 	
 	});
@@ -298,10 +285,11 @@ $(document).ready(function() {
     var cityArray = [];
     var allCity = "";
     var geocoder;
+    var map;
       function initMap() {
         var myLatlng = {lat: 50.60, lng: 3.06};
 
-        var map = new google.maps.Map(document.getElementById("map"), {
+        map = new google.maps.Map(document.getElementById("map"), {
           zoom: 4,
           center: myLatlng
         });
@@ -310,6 +298,7 @@ $(document).ready(function() {
         document.getElementById('valider').addEventListener('click', function() {
           geocodeAddress(geocoder, map);
         });
+        
         
 
         marker = new google.maps.Marker({
@@ -363,6 +352,8 @@ $(document).ready(function() {
             }
           });
         }
+      
+      
       function placeMarkerAndPanTo(latLng, map) {
     	
     	   marker = new google.maps.Marker({
@@ -423,20 +414,43 @@ $(document).ready(function() {
 function display() {
         document.getElementById("textField1").value = allCity;
     }
+    
+    
+function access(){
+<%String attribut = "";
+	if(request.getAttribute("test") != null){
+		attribut = (String) request.getAttribute("test");
+	} 
+		String [] tabville = attribut.split(",");
+%>
+var test="<%=attribut%>";
+var tabtest = [];
+tabtest = test.split(",");
+console.log(tabtest);
+console.log(tabtest[5]);
+	for(var i = 0; i <tabtest.length; i++){
+		var newAddress;
+		geocoder.geocode({'address':tabtest[i]},function(results,status){
+			if(status==google.maps.GeocoderStatus.OK){
+				newAddress=results[0].geometry.location;
+				var latlng = new google.maps.LatLng(parseFloat(newAddress.lat()),parseFloat(newAddress.lng()));
+				console.log("coucou");
+				var marker = new google.maps.Marker({
+			        map : map,
+			        position : newAddress
+			      });
+				marker.setMap(map);
+			}
+		});
+	}
+  
+}
 </script>
+
 
 <body>
 
-<div id="check">
-<form id="form1" action="Select" method="GET" enctype="multipart/form-data">
-	<input id="textField1" type="hidden" size="13" value="clear" name="textField1" /><br>
 
-		 <input type="checkbox" name="C" /> C
-         <input type="checkbox" name="Java"  /> JAVA
-         <input type="checkbox" name="Cobol" /> COBOL
-	<button type="submit" onclick="display()">Valide</button>
-</form>
-</div>
 
 <div id="ajoutvilleetlangage">
 <form action="InsertCityAndIntereset" method="GET">
@@ -447,18 +461,25 @@ function display() {
 <button type="submit">Insert</button>
 </form>
 </div>
+
 <div id="mabite">
-<form action="Select" method="GET">
+<form action="Select2" method="GET">
 <label for="mydropdown" datalabel="mydropdown">Country:</label>    
-<select name="textField1">
-    <option value="United States">United States</option>
-    <option value="Canada">Canada</option>
-    <option value="Mexico">Mexico</option>
-    <option value="Other">Not Listed</option>
+<input id="textField1" type="hidden" size="13" value="clear" name="textField1" /><br>
+<select name="textField2">
+    <option value="Nothing"></option>
+    <option value="C">C</option>
+    <option value="Java">Java</option>
+    <option value="Cobol">Cobol</option>
 </select>	
-<button type="submit" onclick="display()">Valide</button>
+<button id="goServlet" type="submit" onclick="display()">Valide</button>
 
 </form>
 </div>
-  </body>
+
+
+
+
+</body>
+           
 </html>

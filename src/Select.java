@@ -49,6 +49,8 @@ public class Select extends HttpServlet {
 	}
 	//Check pour pas les mêmes villes
 	Connection con =null;
+    String touteVille = "";
+
 	try {
 	    
 	    // enregistrement du driver
@@ -115,7 +117,8 @@ public class Select extends HttpServlet {
 		{
 		    out.println("<tr>");
 		    out.print("<td>"+rs.getString("NameCity")+"</td>");
-		    out.print("<td>"+rs.getString("Langage")+"</td>");
+		    touteVille+= rs.getString("NameCity") + ",";
+		   // out.print("<td>"+rs.getString("Langage")+"</td>");
 		  //  out.print("<td>"+rs.getString("Description")+"</td>");
 		   // out.print("<td>"+rs.getString("Department")+"</td>");
 		    out.println("</tr>");
@@ -143,6 +146,8 @@ public class Select extends HttpServlet {
 	out.println("</div>");
 	out.println("<a href='map.jsp'><button type='button' >Previous page</button></a>");	
 	out.println("</body></html>");
+	req.setAttribute( "test", touteVille );
+	this.getServletContext().getRequestDispatcher( "/map.jsp" ).forward( req, res );
     //res.sendRedirect("map.jsp");
 	//req.getRequestDispatcher("map.jsp").forward(req, res);
 
