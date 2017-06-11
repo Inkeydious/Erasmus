@@ -504,6 +504,23 @@ function access(){
 			});
 			
 		}
+		<%String langageattr = "";
+		if(request.getAttribute("langage") != null){
+			langageattr = (String) request.getAttribute("langage");
+		}
+			String [] tablangage = langageattr.split(",");
+	%>
+	var lang="<%=langageattr%>";
+	var langagetest = [];
+	langagetest = lang.split(",");
+	var select = document.getElementById('selectid');
+
+	 for (var i = 0; i < langagetest.length ; i++){
+	     var opt = document.createElement('option');
+	     opt.value = i;
+	     opt.innerHTML = i;
+	     select.appendChild(opt);
+	 }
 		
 	  
 	}
@@ -526,13 +543,9 @@ function access(){
 <form action="Select" method="GET">
 <label for="mydropdown" datalabel="mydropdown">Interests</label>
 <input id="textField1" type="hidden" size="13" value="clear" name="textField1" />  
-<select name="textField2">
-    <option value="Nothing"></option>
-    <option value="Java">Java</option>
-    <option value="Cobol">Cobol</option>
-    <option value="C">C</option>
-</select>	
-<button type="submit" onclick="display()">Valide</button>
+<select id="selectid" name="textField2">
+</select>		
+<button type="submit" onclick="display()">Valide</button><a href='SelectLangage'><button type='button'>Load interests</button></a>
 
 </form>
 </div>
