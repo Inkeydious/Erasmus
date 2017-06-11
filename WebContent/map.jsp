@@ -221,14 +221,8 @@
     var allCity = "";
     var map;
     var geocoder;
-    var contentString = '<div id="content">'+
-    '<div id="siteNotice">'+
-    '</div>'+
-    '<h1 id="firstHeading" class="firstHeading">Lille</h1>'+
-    '<div id="bodyContent">'+
-    '<p><b>Lille</b></p>'+
-    '</div>'+
-    '</div>';
+    var actualCity;
+    var contentString;
     var infowindow;
       function initMap() {
         var myLatlng = {lat: 50.60, lng: 3.06};
@@ -251,9 +245,7 @@
         });
       	marker.setVisible(false);
         
-      	infowindow = new google.maps.InfoWindow({
-            content: contentString
-          });
+      	
       	
         map.addListener('click', function(e) {
             placeMarkerAndPanTo(e.latLng, map);
@@ -264,11 +256,33 @@
                 google.maps.event.addListener(markerArray[i], 'dblclick', function() {
                     this.setMap(null);
 					markerArray.splice(i,1);
-					cityArray.splice(1,1);
+					cityArray.splice(i,1);
                 });
-                google.maps.event.addListener(markerArray[i], 'click', function() {
-                	 infowindow.open(map, markerArray[i]);
-                });
+                $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+latitude+","+longitude+"&sensor=false", function( data ) {
+	      			  for(var i=0;i<data.results.length;i++){
+	      				  var item = data.results;
+	      				  for(var j=0;j<item.length;j++){
+	      					  if(item[i].address_components[j].types[0] === "locality"){  
+	      						  actualCity = item[i].address_components[j].long_name;
+	      						}
+	      					  break;
+	      				  }
+	      			  }
+	      			});             
+              google.maps.event.addListener(markerArray[i], 'rightclick', function() { 
+              	 infowindow = new google.maps.InfoWindow({
+		                    content: '<div id="content">'+
+			                '<div id="siteNotice">'+
+			                '</div>'+
+			                '<h1 id="firstHeading" class="firstHeading">'+actualCity+'</h1>'+
+			                '<div id="bodyContent">'+
+			                '<p><b>'+ actualCity+'</b></p>'+
+			                '</div>'+
+			                '</div>'
+		                  });
+              	 infowindow.open(map, markerArray[i]);
+		             console.log(actualCity+" coucou");
+              });
             }
             console.log(markerArray);
             //Call to servlet
@@ -322,6 +336,7 @@ $(document).ready(function() {
 						  cityArray.push(item[i].address_components[j].long_name);
 						  allCity += item[i].address_components[j].long_name + ",";
 						  console.log(allCity);
+						  actualCity = item[i].address_components[j].long_name;
 						}
 					  break;
 				  }
@@ -404,16 +419,41 @@ function access(){
 				      });
 					markerArray.push(marker);
 					marker.setMap(map);
-					for (var j = 0; j < markerArray.length; j++) {
+					
+					for (var j = 0; j < markerArray.length; j++) {        
+		                $.getJSON("http://maps.googleapis.com/maps/api/geocode/json?latlng="+newAddress.lat()+","+newAddress.lng()+"&sensor=false", function( data ) {
+			      			  for(var i=0;i<data.results.length;i++){
+			      				  var item = data.results;
+			      				  for(var j=0;j<item.length;j++){
+			      					  if(item[i].address_components[j].types[0] === "locality"){  
+			      						  actualCity = item[i].address_components[j].long_name;
+			      						  cityArray.push(actualCity);
+			      						}
+			      					  break;
+			      				  }
+			      			  }
+			      			});             
+		                google.maps.event.addListener(markerArray[j], 'rightclick', function() { 
+		                	console.log("marker : " + markerArray.length);
+		                	console.log("ville : " + cityArray.length);
+
+		                	 infowindow = new google.maps.InfoWindow({
+				                    content: '<div id="content">'+
+					                '<div id="siteNotice">'+
+					                '</div>'+
+					                '<h1 id="firstHeading" class="firstHeading">'+actualCity+'</h1>'+
+					                '<div id="bodyContent">'+
+					                '<p><b>'+ actualCity+'</b></p>'+
+					                '</div>'+
+					                '</div>'
+				                  });
+		                	 infowindow.open(map, markerArray[j]);
+				             console.log(actualCity+" coucou");
+		                });
 		                google.maps.event.addListener(markerArray[j], 'dblclick', function() {
 		                    this.setMap(null);
-		                    markerArray[j]=null;
-		                });
-		                infowindow = new google.maps.InfoWindow({
-		                    content: contentString
-		                  });
-		                google.maps.event.addListener(markerArray[j], 'click', function() {
-		                	 infowindow.open(map, markerArray[j]);
+		                    markerArray.splice(i,1);
+							cityArray.splice(i,1);
 		                });
 		            }
 				}
@@ -443,7 +483,7 @@ function access(){
 <label for="mydropdown" datalabel="mydropdown">Interests</label>
 <input id="textField1" type="hidden" size="13" value="clear" name="textField1" />  
 <select name="textField2">
-    <option value="Nothing"></option>
+    <option value="Nothing">All</option>
     <option value="Java">Java</option>
     <option value="Cobol">Cobol</option>
     <option value="C">C</option>
@@ -454,7 +494,6 @@ function access(){
 </div>
 
 <div id="vireMarker">
-	<button type="submit" onclick="videArrayMarker()">Remove all markers</button>
 	<button type="submit" onclick="videArrayMarker()">Remove all markers</button>
 
 </div>
