@@ -36,7 +36,7 @@
       }
       #panelderecherche {
       	position: absolute;
-        top: 45%;
+        top: 55%;
         left: 81%;
         background-color: #fff;
         padding: 10px;
@@ -79,7 +79,7 @@
         }
        #dropdownlist{
       	position: absolute;
-        top: 60%;
+        top: 80%;
         left: 81%;
         width: 17%;
         height: 20%;
@@ -90,12 +90,11 @@
         font-size: small;
         line-height: 30px;
        }
-       #dropdownlist{
+       #dropdownlistinsert{
       	position: absolute;
-        top: 60%;
-        left: 81%;
-        width: 17%;
-        height: 20%;
+        top: 15%;
+        left: 21%;
+        width: 57%;
         background-color: #fff;
         border: 1px  #999;
         text-align: center;
@@ -107,9 +106,13 @@
       	color: red;
       	font-size: x-large;
       }
+      #insertintothedatabase{
+      	color: red;
+      	font-size: large;
+      }
       #separation{
       	position: absolute;
-        top: 35%;
+        top: 45%;
         left: 81%;
         width: 15%;
         background-color: #fff;
@@ -201,7 +204,19 @@
 
 </form>
 </div>
-
+<div id="ajoutvilleetlangage">
+<br>
+<label id="insertintothedatabase">Insert into the database</label>
+<form action="InsertCityAndInterest" method="GET">
+	<label for="city" >Name of the city : </label>
+	<input type="text" name="insertcity"/><br>
+	<label for="intereset" >Name of the interest : </label>
+	<input type="text" name="insertintereset"><br>
+	<label for="department" >Name of the department : </label>
+	<input type="text" name="insertdepartment"><br>
+<button type="submit">Insert</button>
+</form>
+</div>
 </div>
 <div id="separation"></div>
   <div id="panelderecherche">
